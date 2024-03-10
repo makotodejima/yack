@@ -78,7 +78,7 @@
         "resizable": true,
         "title": "yack",
         "width": 640,
-        "height": 640,
+        "height": 680,
         "minWidth": 550,
         "minHeight": 640,
         "center": true

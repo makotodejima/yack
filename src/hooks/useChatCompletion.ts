@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { SSE } from "sse";
 import type { DeepRequired } from "../helpers/types";
+import { ApiConfig } from "../helpers/config";
 
 export type GPT35 = "gpt-3.5-turbo" | "gpt-3.5-turbo-0301";
 export type GPT4 = "gpt-4" | "gpt-4-0314" | "gpt-4-32k" | "gpt-4-32k-0314";
@@ -41,9 +42,8 @@ export type ChatCompletionChunk = {
 export type ChatMessage = DeepRequired<ChatMessageParams>;
 
 export type OpenAIStreamingProps = {
-  apiKey: string;
-  model: string;
   setErrorMessage: (message: string) => void;
+  config?: ApiConfig;
 };
 
 type RequestOptions = {
@@ -52,7 +52,6 @@ type RequestOptions = {
   payload: string;
 };
 
-const CHAT_COMPLETIONS_URL = "https://api.openai.com/v1/chat/completions";
 const MILLISECONDS_PER_SECOND = 1000;
 
 const updateLastItem = <T>(currentItems: T[], updatedLastItem: T) => {
@@ -87,6 +86,23 @@ const getRequestOptions = (
   }),
 });
 
+const getAzureRequestOptions = (
+  apiKey: string,
+  model: string,
+  messages: ChatMessage[]
+): RequestOptions => ({
+  headers: {
+    "Content-Type": "application/json",
+    "api-key": `${apiKey}`,
+  },
+  method: "POST",
+  payload: JSON.stringify({
+    model,
+    messages: messages.map(getOpenAIRequestMessage),
+    stream: true,
+  }),
+});
+
 // transform chat message into a chat message with metadata
 const createChatMessage = ({
   content,
@@ -105,9 +121,8 @@ const createChatMessage = ({
 });
 
 export const useChatCompletion = ({
-  model,
-  apiKey,
   setErrorMessage,
+  config,
 }: OpenAIStreamingProps) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [source, setSource] = useState<SSE>();
@@ -202,10 +217,16 @@ export const useChatCompletion = ({
         ...newPrompt.map(createChatMessage),
       ];
 
-      const source = new SSE(
-        CHAT_COMPLETIONS_URL,
-        getRequestOptions(apiKey, model, chatMessages)
-      );
+      if (!config) {
+        return;
+      }
+
+      const options =
+        config.provider === "openai"
+          ? getRequestOptions(config.apiKey, config.model, chatMessages)
+          : getAzureRequestOptions(config.apiKey, config.model, chatMessages);
+
+      const source = new SSE(config.endpoint, options);
       setSource(source);
 
       // placeholder for next message that will be returned from API
@@ -231,7 +252,7 @@ export const useChatCompletion = ({
 
       source.stream();
     },
-    [apiKey, handleChunk, messages, model]
+    [config, handleChunk, messages]
   );
 
   return [messages, submitQuery, resetMessages, closeStream] as const;

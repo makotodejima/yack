@@ -13,17 +13,15 @@ import {
 import KbdShort from "../../components/KbdShort";
 import { useHotkeys } from "react-hotkeys-hook";
 import {
-  getApiKey,
-  getModel,
   getConversation,
   incrementUsage,
   removeApiKey,
   saveConversation,
   saveConversationIDToHistory,
-  store,
 } from "../../helpers/store";
 
 import { DownArrow } from "../../svg";
+import { ApiConfig, getConfig } from "../../helpers/config";
 
 export type TErrorMessage = {
   error: {
@@ -39,8 +37,7 @@ const ChatPage = () => {
   const navigate = useNavigate();
   const [conv, setConv] = useState<ChatMessageParams[]>([]);
   const [queryErrored, setQueryErrored] = useState(false);
-  const [apiKey, setApiKey] = useState("");
-  const [model, setModel] = useState("");
+  const [config, setConfig] = useState<ApiConfig>();
   const [streamClosed, setStreamClosed] = useState(false);
   const [queryErroredMessage, setQueryErroredMessage] = useState(
     "Something went wrong. Please try again."
@@ -52,8 +49,7 @@ const ChatPage = () => {
 
   const [messages, submitQuery, resetMessages, closeStream] = useChatCompletion(
     {
-      model: model,
-      apiKey: apiKey,
+      config: config,
       setErrorMessage: (message) => handleErrorMessage(message),
     }
   );
@@ -161,19 +157,16 @@ const ChatPage = () => {
   if (!id) return null;
 
   useEffect(() => {
-    async function checkAPIKeyAndModel() {
-      const key = await getApiKey();
-      const localModel = (await getModel()) || "gpt-3.5-turbo";
-
-      if (!key) {
+    async function checkAPIConfig() {
+      try {
+        const config = await getConfig();
+        setConfig(config);
+      } catch (e) {
         navigate("/");
-      } else {
-        setApiKey(key);
-        setModel(localModel);
       }
     }
 
-    checkAPIKeyAndModel();
+    checkAPIConfig();
   }, []);
 
   useEffect(() => {
