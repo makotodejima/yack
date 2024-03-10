@@ -96,8 +96,6 @@ export const PromptInput = ({
         value={value}
         onChange={onChange}
         placeholder="Go on, ask me anything"
-        autoComplete="off"
-        autoCorrect="off"
         autoFocus
         onKeyDown={onKeyDown}
         rows={1}
