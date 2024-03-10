@@ -15,7 +15,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 import {
   getConversation,
   incrementUsage,
-  removeApiKey,
+  removeConfig,
   saveConversation,
   saveConversationIDToHistory,
 } from "../../helpers/store";
@@ -140,12 +140,15 @@ const ChatPage = () => {
   const handleErrorMessage = (message: string) => {
     if (message !== "") {
       const parsed = JSON.parse(message) as TErrorMessage;
-      if (parsed.error.code === "invalid_api_key") {
+      if (
+        parsed.error.code === "invalid_api_key" ||
+        parsed.error.code === "401"
+      ) {
         setQueryErroredMessage(
           "Invalid API Key. Returning to home page in 5 seconds."
         );
         setTimeout(() => {
-          removeApiKey();
+          removeConfig();
           navigate("/");
         }, 5000);
       } else {

@@ -1,5 +1,6 @@
 import { Store } from "tauri-plugin-store-api";
 import { ChatMessageParams } from "../hooks/useChatCompletion";
+import { ApiConfig } from "./config";
 
 export const store =
   process.env.NODE_ENV === "production"
@@ -20,13 +21,33 @@ export type THistory = {
   [key: string]: THistoryMessageProps;
 };
 
-export const setApiKey = async (apiKey: string) => {
+export const setOpenAIConfig = async (apiKey: string) => {
+  await store.set("provider", "openai");
   await store.set("api_key", apiKey);
   await store.save();
 };
 
+export const setAzureOpenAIConfig = async (
+  endpoint: string,
+  apiKey: string
+) => {
+  await store.set("provider", "azure_openai");
+  await store.set("azure_endpoint", endpoint);
+  await store.set("azure_api_key", apiKey);
+  await store.save();
+};
+
+export const getProvider = async () =>
+  await store.get<Promise<ApiConfig["provider"]>>("provider");
+
 export const getApiKey = async () =>
   await store.get<Promise<string>>("api_key");
+
+export const getAzureEndpoint = async () =>
+  await store.get<Promise<string>>("azure_endpoint");
+
+export const getAzureApiKey = async () =>
+  await store.get<Promise<string>>("azure_api_key");
 
 export const setModel = async (model: string) => {
   await store.set("model", model);
@@ -34,6 +55,14 @@ export const setModel = async (model: string) => {
 };
 
 export const getModel = async () => await store.get<Promise<string>>("model");
+
+export const removeConfig = async () => {
+  await store.delete("provider");
+  await store.delete("api_key");
+  await store.delete("azure_api_key");
+  await store.delete("azure_endpoint");
+  await store.save();
+};
 
 export const removeApiKey = async () => {
   await store.delete("api_key");

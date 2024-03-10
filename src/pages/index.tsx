@@ -1,22 +1,22 @@
 import { Fragment, useEffect } from "react";
-import TokenRegistration from "../components/TokenRegistration";
 import { useNavigate } from "react-router-dom";
+import TokenRegistration from "../components/TokenRegistration";
+import { getProvider } from "../helpers/store";
 import { LogoIcon } from "../svg";
-import { getApiKey } from "../helpers/store";
 
 function Index() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    async function checkAPIKey() {
-      const key = await getApiKey();
+    async function checkConfig() {
+      const provider = await getProvider();
 
-      if (key) {
+      if (provider) {
         navigate("/chat/new");
       }
     }
 
-    checkAPIKey();
+    checkConfig();
   }, []);
 
   return (

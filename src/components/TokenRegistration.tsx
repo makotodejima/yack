@@ -5,6 +5,7 @@ import {
   incrementUsage,
   setOpenAIConfig,
   setAzureOpenAIConfig,
+  removeConfig,
 } from "../helpers/store";
 import { DownChevron } from "../svg";
 import { ApiConfig, getGptModels } from "../helpers/config";
@@ -38,6 +39,7 @@ const TokenRegistration = () => {
       navigate("/chat/new");
     } catch (error: any) {
       setError(error.message);
+      await removeConfig();
     } finally {
       setIsSubmitting(false);
     }
