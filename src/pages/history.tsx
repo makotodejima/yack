@@ -49,10 +49,10 @@ const HistoryPage = () => {
     fetchHistory();
   };
 
-  useHotkeys("ArrowUp", () => moveSelectedIndex(-1), {
+  useHotkeys("ArrowUp, ctrl+p", () => moveSelectedIndex(-1), {
     preventDefault: true,
   });
-  useHotkeys("ArrowDown", () => moveSelectedIndex(1), {
+  useHotkeys("ArrowDown, ctrl+n", () => moveSelectedIndex(1), {
     preventDefault: true,
   });
   useHotkeys(
@@ -78,6 +78,10 @@ const HistoryPage = () => {
 
   const handleSearchKeydown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
+      inputRef.current?.blur();
+    }
+    if (e.key === "Escape") {
+      setSearch("");
       inputRef.current?.blur();
     }
   };
