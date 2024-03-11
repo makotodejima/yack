@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { hideApp } from "../Header";
 import { useNavigation } from "../../hooks/useNavigation";
 import KbdShort from "../KbdShort";
+import { useHotkeys } from "react-hotkeys-hook";
 
 type TProps = {
   sendPrompt: (prompt: string) => void;
@@ -32,6 +32,13 @@ export const PromptInput = ({
     }
   }, []);
 
+  useHotkeys("i", (e) => {
+    if (textAreaRef.current) {
+      textAreaRef.current.focus();
+      e.preventDefault();
+    }
+  });
+
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setValue(e.target.value);
   };
@@ -53,9 +60,9 @@ export const PromptInput = ({
     }
 
     if (e.key === "Escape" && !e.metaKey) {
-      setValue("");
-      if (value.trim() === "") {
-        hideApp();
+      if (textAreaRef.current) {
+        textAreaRef.current.blur();
+        e.preventDefault();
       }
     }
 

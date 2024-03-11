@@ -72,6 +72,22 @@ const ChatPage = () => {
     }
   };
 
+  const scrollBy = (px: number) => {
+    const scrollNode = scrollableRef.current;
+    if (scrollNode) {
+      const { scrollTop, scrollHeight, clientHeight } = scrollNode;
+      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
+
+      if (isAtBottom && px > 0) {
+        return;
+      }
+      scrollNode.scrollTo({
+        top: (scrollNode.scrollTop = scrollTop + px),
+        behavior: "smooth",
+      });
+    }
+  };
+
   const handleDownArrowClick = () => {
     const scrollNode = scrollableRef.current;
     if (scrollNode) {
@@ -236,6 +252,10 @@ const ChatPage = () => {
   };
 
   useHotkeys("meta+e", handleCloseStream);
+
+  useHotkeys("j", () => scrollBy(80));
+  useHotkeys("k", () => scrollBy(-80));
+  useHotkeys("shift+g", handleDownArrowClick);
 
   const chatConversations =
     messages.length === 0 && conv.length > 0 ? conv : messages;

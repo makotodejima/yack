@@ -49,7 +49,7 @@ const Header = ({
 
   useHotkeys("escape", handleEscape);
 
-  useHotkeys("meta+p", onClickHistory);
+  useHotkeys("meta+p, ctrl+p", onClickHistory);
   useHotkeys("meta+n", () => {
     if (!streamOngoing) {
       onClickNew();

@@ -11,7 +11,7 @@
 }
 
 html {
-  font-size: 13px;
+  font-size: 14px;
 }
 
 body {
@@ -83,7 +83,7 @@ button {
 }
 
 [data-theme="andromeda"] {
-  --color-text-primary: rgb(255, 255, 255);
+  --color-text-primary: rgb(202, 202, 202);
   --color-text-secondary: rgb(206, 215, 210);
   --color-text-tertiary: rgb(174, 171, 177);
   --color-text-placeholder: rgb(113, 113, 122);
@@ -200,7 +200,7 @@ ul {
 }
 
 pre > code {
-  @apply max-h-[320px] overflow-y-auto !bg-code px-3 py-2 !text-primary;
+  @apply max-h-[600px] overflow-y-auto !bg-code px-3 py-2 !text-primary;
 }
 
 :not(pre) > code {
